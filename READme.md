@@ -28,5 +28,5 @@
 #### 2. 프론트 엔드 
 **JQuery...**
 ****
-> 프로젝트 화면 및 후기
+> [프로젝트 화면 및 후기](https://github.com/SightStudio/Survey/tree/master/README_FILE)
 ****

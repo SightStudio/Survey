@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.adm.sheet">
+	
+	<!-- 질문지 선택  -->
+   	<insert id="insertSheet" parameterType="commonVO">
+	    <![CDATA[
+	    	INSERT INTO TB_SHEET(ROLE_SEQ, SHEET_NAME, REG_TIME)
+	    		VALUES (#{role_seq} ,#{sheet_name}, now())
+		]]>
+		
+		<selectKey resultType="integer" keyProperty="sheet_seq" order="AFTER">
+		    SELECT LAST_INSERT_ID()
+		</selectKey>
+    </insert>
+    
+    <insert id="insertSheetDetail" parameterType="commonVO">
+	    <![CDATA[
+	    	INSERT INTO TB_SHEET_DETAIL(
+	    		SHEET_SEQ, 
+	    		ROW, 
+	    		TITLE_DEPTH_1,
+	    		TITLE_DEPTH_2,
+	    		COL_1_DETAIL,
+	    		COL_2_DETAIL,
+	    		COL_3_DETAIL,
+	    		COL_4_DETAIL,
+	    		COL_5_DETAIL,
+	    		A_SEQ,
+	    		IS_COMMON
+	    		)
+    		VALUES 
+		]]>
+		<foreach collection="detailList" item="el" separator=" , ">
+			<![CDATA[
+            	(#{sheet_seq}, 
+            	 #{el.row}, 
+            	 #{el.title_depth_1}, 
+            	 #{el.title_depth_2}, 
+            	 #{el.col_1_detail},
+	    		 #{el.col_2_detail},
+	    		 #{el.col_3_detail},
+	    		 #{el.col_4_detail},
+	    		 #{el.col_5_detail},
+	    		 #{el.a_seq},
+	    		 #{el.is_common})
+        	]]>
+        </foreach>
+    </insert>
+	
+	<delete id="deleteSheet" parameterType="commonVO" >
+		UPDATE TB_SHEET SET STATUS = 0
+	</delete>
+	
+	<!-- 공통 질문지 선택  -->
+   	<select id="selectSheetCommonList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+	    	SELECT
+				TS.ROLE_SEQ  		 as ROLE_SEQ,
+				TSD.ROW 			 as ROW,
+				TSD.TITLE_DEPTH_1    as TITLE_DEPTH_1,
+				TSD.TITLE_DEPTH_2    as TITLE_DEPTH_2,
+				TSD.COL_1_DETAIL     as COL_1_DETAIL,
+				TSD.COL_2_DETAIL     as COL_2_DETAIL,
+				TSD.COL_3_DETAIL     as COL_3_DETAIL,
+				TSD.COL_4_DETAIL     as COL_4_DETAIL,
+				TSD.COL_5_DETAIL     as COL_5_DETAIL,
+				SHEET_SEQ 			 as SHEET_SEQ,
+				TSD.SHEET_DETAIL_SEQ as SHEET_DETAIL_SEQ,
+				TSD.A_SEQ            as A_SEQ,
+				TSD.IS_COMMON        as IS_COMMON
+		FROM TB_SHEET TS 
+			JOIN TB_SHEET_DETAIL TSD
+				USING(SHEET_SEQ)
+		WHERE TS.STATUS = 1 AND IS_COMMON = 1 AND ROLE_SEQ=2;
+		]]>
+    </select>
+	
+   	<!-- [사무직/생산직] 전체 선택  -->
+   	<select id="selectSheetDetailList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+	    	SELECT
+				TS.ROLE_SEQ  		 as ROLE_SEQ,
+				TSD.ROW 			 as ROW,
+				TSD.TITLE_DEPTH_1    as TITLE_DEPTH_1,
+				TSD.TITLE_DEPTH_2    as TITLE_DEPTH_2,
+				TSD.COL_1_DETAIL     as COL_1_DETAIL,
+				TSD.COL_2_DETAIL     as COL_2_DETAIL,
+				TSD.COL_3_DETAIL     as COL_3_DETAIL,
+				TSD.COL_4_DETAIL     as COL_4_DETAIL,
+				TSD.COL_5_DETAIL     as COL_5_DETAIL,
+				SHEET_SEQ 			 as SHEET_SEQ,
+				TSD.SHEET_DETAIL_SEQ as SHEET_DETAIL_SEQ,
+				TSD.A_SEQ            as A_SEQ,
+				TSD.IS_COMMON        as IS_COMMON
+		FROM TB_SHEET TS 
+			JOIN TB_SHEET_DETAIL TSD
+				USING(SHEET_SEQ)
+		WHERE TS.STATUS = 1 AND IS_COMMON = 0 AND ROLE_SEQ = #{ROLE_SEQ};
+		]]>
+    </select>
+</mapper>

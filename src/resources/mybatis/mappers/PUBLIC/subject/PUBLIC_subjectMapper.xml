@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.official.subject">
+	
+    <!-- 피평가자 현황 목록 선택 -->
+   	<select id="selectSubjectList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+		    SELECT TE.NO          		as NO,
+				   TE.EMP_NO      		as EMP_NO,
+				   TE.NAME        		as NAME,
+				   PTD.NAME       		 as SUPER_DEPT_NAME, 
+				   TD.NAME        		 as DEPT_NAME,
+				   PTR.NAME       		 as SUPER_ROLE_NAME,
+				   PTR.ROLE_SEQ   		 as P_ROLE_SEQ,
+				   TR.NAME        		 as ROLE_NAME,
+				   TR.ROLE_SEQ    		 as ROLE_SEQ,
+				   TE.POSITION    		 as POSITION, 
+				   TE.EMAIL       		 as EMAIL,
+				   ASM.ASSO_SURVEY_SEQ   as ASSO_SURVEY_SEQ,
+				   ASM.WRITER_SEQ 		 as WRITER_SEQ,
+				   ASM.SUBJECT_SEQ 	     as SUBJECT_SEQ,
+				   CASE
+				       WHEN TS.SURVEY_SEQ IS NULL THEN 'N'
+				       ELSE 'Y'
+				   END as IS_SURVEY_FINISHED
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  
+					USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD 
+					ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  
+					USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR 
+					ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+				LEFT JOIN (
+					SELECT * FROM ASSO_SURVEY_MAPPPING WHERE WRITER_SEQ = #{NO} AND STATUS = 1
+				) ASM 
+				    ON ASM.SUBJECT_SEQ = TE.no
+			    LEFT JOIN TB_SURVEY TS
+			    	ON TS.ASSO_SURVEY_SEQ = ASM.ASSO_SURVEY_SEQ
+			WHERE NO != #{NO} AND WRITER_SEQ = #{NO}
+			ORDER BY NO
+		]]>
+    </select>
+</mapper>

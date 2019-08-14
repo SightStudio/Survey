@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.adm.admin">
+
+	<!-- 단일 사원 정보 선택 -->
+   	<select id="selectAdmin" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+		    SELECT admin_seq as ADMIN_SEQ,
+				   id        as ID,
+				   pw        as PW
+			FROM   TB_ADMIN 
+			WHERE  id = #{ID}
+		]]>
+    </select>
+</mapper>

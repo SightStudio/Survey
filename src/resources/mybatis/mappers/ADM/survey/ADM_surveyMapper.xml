@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.adm.survey">
+	
+   	<select id="getSurveyExcuseList" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+	    SELECT
+				TE.NO             as SUBJECT_SEQ,
+				TW.NAME           as WRITER_NAME,
+				TW.EMP_NO         as WRITER_EMP_NO,
+				TE.DEPT_SEQ       as DEPT_SEQ,
+				ASSO_SURVEY_SEQ   as ASSO_SURVEY_SEQ,
+				TS.SURVEY_EXCUSE  as SURVEY_EXCUSE
+		FROM  TB_EMPLOYEE TE
+		    JOIN ASSO_SURVEY_MAPPPING ASM
+				ON TE.NO = ASM.SUBJECT_SEQ
+			JOIN TB_EMPLOYEE TW
+				ON TW.NO = ASM.WRITER_SEQ
+			JOIN TB_SURVEY TS
+				USING(ASSO_SURVEY_SEQ)
+		WHERE ASM.STATUS = 1 
+			AND SURVEY_EXCUSE IS NOT NULL
+			AND SURVEY_EXCUSE != '' 
+			AND TE.NO = #{NO}
+    ]]>
+    </select>
+    
+    <select id="getUnEvaluatedList" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+		SELECT 
+				WRI.NO       as WRITER_SEQ,
+				WRI_P_D.NAME as WRITER_P_DEPT_NAME,
+				WRI_D.NAME   as WRITER_DEPT_NAME,
+				WRI.EMP_NO   as WRITER_EMP_NO,
+				WRI.NAME     as WRITER_NAME,
+				SBJ.NO       as SUBJECT_SEQ,
+				SBJ_P_D.NAME as SUBJECT_P_DEPT_NAME,
+				SBJ_D.NAME   as SUBJECT_DEPT_NAME,
+				SBJ.EMP_NO   as SUBJECT_EMP_NO,
+				SBJ.NAME     as SUBJECT_NAME
+		FROM
+			TB_EMPLOYEE WRI
+			JOIN ASSO_SURVEY_MAPPPING ASM
+				ON WRI.NO = ASM.WRITER_SEQ
+			JOIN TB_EMPLOYEE SBJ
+				ON SBJ.NO = ASM.SUBJECT_SEQ
+			JOIN TB_DEPT WRI_D
+				ON WRI.DEPT_SEQ = WRI_D.DEPT_SEQ
+			JOIN TB_DEPT WRI_P_D
+				ON WRI_P_D.DEPT_SEQ = WRI_D.PARENT_SEQ
+			JOIN TB_DEPT SBJ_D
+				ON SBJ.DEPT_SEQ = SBJ_D.DEPT_SEQ
+			JOIN TB_DEPT SBJ_P_D
+				ON SBJ_P_D.DEPT_SEQ = SBJ_D.PARENT_SEQ
+			LEFT JOIN TB_SURVEY TS
+				ON ASM.ASSO_SURVEY_SEQ = TS.ASSO_SURVEY_SEQ
+		WHERE TS.SURVEY_SEQ IS NULL
+		    AND ASM.STATUS = 1
+		ORDER BY WRITER_NAME, SUBJECT_NAME
+    ]]>
+    </select>
+    
+    
+    <!--  모든 survey 삭제 [ 상태만 변경 ] -->
+    <update id="deleteSurveyAll" parameterType="commonVO">
+     <![CDATA[
+    	UPDATE TB_SURVEY SET STATUS = 0
+    ]]>    
+    </update>
+</mapper>

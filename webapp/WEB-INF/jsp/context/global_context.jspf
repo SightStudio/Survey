@@ -1,0 +1,26 @@
+<%@ page pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<%-- HOME ROOT PATH SETTING --%>
+<c:set var="HOME" value="${pageContext.request.contextPath}" />
+
+<%-- IMAGE PATH SETTING --%> 
+<c:set var="IMG" value="${HOME}/web/img" />
+
+<%-- JAVASCRIPT PATH SETTING --%>
+<c:set var="JS" value="${HOME}/web/js" />
+
+<%-- CSS PATH SETTING --%>
+<c:set var="CSS" value="${HOME}/web/css" />
+ 
+<%-- FILE PATH SETTING --%>
+<c:set var="FILE" value="${HOME}/web/file" />
+
+<%-- JSP PATH SETTING --%>
+<c:set var="JSP" value="/WEB-INF/jsp" />
+
+
+
+
+

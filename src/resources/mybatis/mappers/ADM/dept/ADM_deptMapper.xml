@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.adm.dept">
+	
+	<!-- 최상위 부서 가져오기  -->
+   	<select id="getPDeptList" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+		SELECT TR.DEPT_SEQ  AS DEPT_SEQ,
+			   TR.NAME      AS DEPT_NAME
+		FROM   TB_DEPT TR
+		WHERE  PARENT_SEQ IS NULL;
+	]]>
+    </select>
+   
+	<!-- 부서 목록 조회  -->
+   	<select id="getDeptList" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+		SELECT TR.DEPT_SEQ  AS DEPT_SEQ,
+			   PTR.DEPT_SEQ AS PDEPT_SEQ,
+			   PTR.NAME     AS PDEPT_NAME,
+			   TR.NAME      AS DEPT_NAME
+		FROM   TB_DEPT TR
+			JOIN TB_DEPT PTR 
+				ON TR.PARENT_SEQ = PTR.DEPT_SEQ
+	]]>
+    </select>   
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.official.sheet">
+	
+	<!-- 질문 답변 타입 선택 -->
+	<select id="selectAnswerType" parameterType="commonVO" resultType="commonVO">
+		<![CDATA[
+			SELECT TA.a_seq           AS A_SEQ,
+			       TAD.a_detail_seq   AS A_DETAIL_SEQ,
+			       TA.a_type          AS A_TYPE,
+			       TAD.a_detail       AS A_DETAIL
+			FROM TB_ANSWER TA 
+				JOIN TB_ANSWER_DETAIL TAD
+					using (A_SEQ)
+		]]>
+	</select>
+	
+	<!-- 공통 질문지 선택  -->
+   	<select id="selectSheetCommonList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+    	SELECT
+			TS.ROLE_SEQ  		 as ROLE_SEQ,
+			TSD.ROW 			 as ROW,
+			TSD.TITLE_DEPTH_1    as TITLE_DEPTH_1,
+			TSD.TITLE_DEPTH_2    as TITLE_DEPTH_2,
+			TSD.COL_1_DETAIL     as COL_1_DETAIL,
+			TSD.COL_2_DETAIL     as COL_2_DETAIL,
+			TSD.COL_3_DETAIL     as COL_3_DETAIL,
+			TSD.COL_4_DETAIL     as COL_4_DETAIL,
+			TSD.COL_5_DETAIL     as COL_5_DETAIL,
+			SHEET_SEQ 			 as SHEET_SEQ,
+			TSD.SHEET_DETAIL_SEQ as SHEET_DETAIL_SEQ,
+			TSD.A_SEQ            as A_SEQ,
+			TSD.IS_COMMON        as IS_COMMON
+		FROM TB_SHEET TS 
+			JOIN TB_SHEET_DETAIL TSD
+				USING(SHEET_SEQ)
+		WHERE TS.STATUS = 1 AND IS_COMMON = 1 AND ROLE_SEQ=2;
+		]]>
+    </select>
+	
+   	<!-- [사무직/생산직] 전체 선택  -->
+   	<select id="selectSheetDetailList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+	    	SELECT
+				TS.ROLE_SEQ  		 as ROLE_SEQ,
+				TSD.ROW 			 as ROW,
+				TSD.TITLE_DEPTH_1    as TITLE_DEPTH_1,
+				TSD.TITLE_DEPTH_2    as TITLE_DEPTH_2,
+				TSD.COL_1_DETAIL     as COL_1_DETAIL,
+				TSD.COL_2_DETAIL     as COL_2_DETAIL,
+				TSD.COL_3_DETAIL     as COL_3_DETAIL,
+				TSD.COL_4_DETAIL     as COL_4_DETAIL,
+				TSD.COL_5_DETAIL     as COL_5_DETAIL,
+				SHEET_SEQ 			 as SHEET_SEQ,
+				TSD.SHEET_DETAIL_SEQ as SHEET_DETAIL_SEQ,
+				TSD.A_SEQ            as A_SEQ,
+				TSD.IS_COMMON        as IS_COMMON
+		FROM TB_SHEET TS 
+			JOIN TB_SHEET_DETAIL TSD
+				USING(SHEET_SEQ)
+		WHERE TS.STATUS = 1 AND IS_COMMON = 0 AND ROLE_SEQ = #{P_ROLE_SEQ};
+		]]>
+    </select>
+</mapper>

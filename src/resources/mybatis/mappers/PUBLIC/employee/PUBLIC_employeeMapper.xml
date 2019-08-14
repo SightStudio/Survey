@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.official.employee">
+
+	<!-- 사원 목록 선택 -->
+   	<select id="selectEmployeeList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+			SELECT TE.NO        as NO,
+				   TE.EMP_NO    as EMP_NO,
+				   TE.NAME      as NAME,
+				   PTD.NAME     as SUPER_DEPT_NAME, 
+				   TD.NAME      as DEPT_NAME,
+				   PTR.NAME     as SUPER_ROLE_NAME,
+				   TR.NAME      as ROLE_NAME,
+				   TE.POSITION  as POSITION, 
+				   TE.EMAIL     as EMAIL,
+				   PTR.ROLE_SEQ as SUPER_ROLE_SEQ,
+				   TR.ROLE_SEQ  as ROLE_SEQ
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+			WHERE TE.STATUS = 1
+			ORDER BY NO
+		]]>
+    </select>
+
+	<!-- 단일 사원 정보 선택 -->
+   	<select id="selectEmployee" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+		    SELECT TE.NO        as NO,
+				   TE.EMP_NO    as EMP_NO,
+				   TE.ID        as ID,
+				   TE.PW        as PW,
+				   TE.NAME      as NAME,
+				   PTD.NAME     as SUPER_DEPT_NAME,
+				   TD.NAME      as DEPT_NAME,
+				   PTR.NAME     as SUPER_ROLE_NAME,
+				   PTR.ROLE_SEQ as P_ROLE_SEQ,
+				   TR.ROLE_SEQ  as ROLE_SEQ,
+				   TR.NAME      as ROLE_NAME,
+				   TE.POSITION  as POSITION, 
+				   TE.EMAIL     as EMAIL
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+			WHERE 1 = 1 AND TE.STATUS = 1
+			]]>			
+			<if test="ID !=null and !ID.equals('')">
+				AND ID = #{ID}
+			</if>
+			<if test="NO !=null and !NO.equals('')">
+				AND NO = #{NO}
+			</if>
+    </select>
+    
+    <!-- 단일 사원 정보 선택 (설문지 정보 포함) -->
+   	<select id="selectEmployeeWithSheet" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+		    SELECT TE.NO        as NO,
+				   TE.EMP_NO    as EMP_NO,
+				   TE.ID        as ID,
+				   TE.PW        as PW,
+				   TE.NAME      as NAME,
+				   PTD.NAME     as SUPER_DEPT_NAME,
+				   TD.NAME      as DEPT_NAME,
+				   PTR.NAME     as SUPER_ROLE_NAME,
+				   PTR.ROLE_SEQ as P_ROLE_SEQ,
+				   TR.ROLE_SEQ  as ROLE_SEQ,
+				   TR.NAME      as ROLE_NAME,
+				   TE.POSITION  as POSITION, 
+				   TE.EMAIL     as EMAIL,
+				   SH.SHEET_SEQ as SHEET_SEQ
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+				JOIN TB_SHEET SH ON SH.ROLE_SEQ = PTR.ROLE_SEQ 
+			WHERE NO = #{NO} and TE.STATUS = 1 and SH.STATUS = 1
+			]]>
+    </select>
+</mapper>

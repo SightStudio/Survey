@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.adm.employee">
+	
+	<!-- 사원 추가   -->
+    <insert id="insertEmployee" parameterType="commonVO">
+	    <![CDATA[
+			INSERT INTO TB_EMPLOYEE
+				(id, pw, dept_seq, emp_no, name, role_seq, position, email)
+			VALUES
+	    ]]>
+	    <foreach collection="empList" item="el" separator=" , ">
+			<![CDATA[
+				(#{el.emp_id}, #{el.emp_pw}, #{el.dept_seq}, #{el.emp_no}, #{el.emp_name}, #{el.role_seq}, #{el.emp_position}, #{el.emp_email})
+        	]]>
+        </foreach>
+    </insert>
+	
+	<update id="modifyEmployee" parameterType="commonVO">
+		<![CDATA[
+			UPDATE TB_EMPLOYEE  
+			SET ID         = #{emp_id},
+			    PW         = #{emp_pw},
+			    DEPT_SEQ   = #{dept_seq},
+			    EMP_NO     = #{emp_no},
+			    NAME       = #{emp_name},
+			    ROLE_SEQ   = #{role_seq},
+			    POSITION   = #{emp_position},
+			    EMAIL      = #{emp_email}
+			WHERE NO = #{emp_seq}
+		]]>
+	</update>
+	
+	<update id="deleteEmployee" parameterType="commonVO">
+		<![CDATA[
+			UPDATE TB_EMPLOYEE
+			SET    STATUS = 0
+			WHERE  NO = #{emp_seq}
+		]]>
+	</update>
+	
+	<!-- 사원 목록 선택 -->
+   	<select id="selectEmployeeList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+			SELECT TE.NO         as NO,
+				   TE.EMP_NO     as EMP_NO,
+				   TE.ID         as EMP_ID,
+				   TE.PW         as EMP_PW,
+				   TE.NAME       as EMP_NAME,
+				   PTD.NAME      as SUPER_DEPT_NAME, 
+				   TD.NAME       as DEPT_NAME,
+				   PTD.DEPT_SEQ  as PDEPT_SEQ,
+				   TD.DEPT_SEQ   as DEPT_SEQ,
+				   PTR.NAME      as SUPER_ROLE_NAME,
+				   PTR.ROLE_SEQ  as PROLE_SEQ,
+				   TR.ROLE_SEQ   as ROLE_SEQ,
+				   TR.NAME       as ROLE_NAME,
+				   TE.POSITION   as POSITION, 
+				   TE.EMAIL      as EMAIL
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+			WHERE STATUS = 1
+			ORDER BY PDEPT_SEQ, DEPT_SEQ
+		]]>
+    </select>
+
+	<!-- 단일 사원 정보 선택 -->
+   	<select id="selectEmployee" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+		    SELECT TE.NO        as NO,
+				   TE.EMP_NO    as EMP_NO,
+				   TE.ID        as ID,
+				   TE.PW        as PW,
+				   TE.NAME      as NAME,
+				   PTD.NAME     as SUPER_DEPT_NAME,
+				   TD.NAME      as DEPT_NAME,
+				   PTR.NAME     as SUPER_ROLE_NAME,
+				   PTR.ROLE_SEQ as P_ROLE_SEQ,
+				   TR.ROLE_SEQ  as ROLE_SEQ,
+				   TR.NAME      as ROLE_NAME,
+				   TE.POSITION  as POSITION, 
+				   TE.EMAIL     as EMAIL
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+			WHERE 1 = 1 AND TE.STATUS = 1
+			]]>			
+			<if test="ID !=null and !ID.equals('')">
+				AND ID = #{ID}
+			</if>
+			<if test="NO !=null and !NO.equals('')">
+				AND NO = #{NO}
+			</if>
+    </select>
+</mapper>

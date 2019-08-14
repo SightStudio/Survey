@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.adm.subject">
+	
+	<!-- 피평가자 목록 등록  -->
+	<insert id="insertAssoSurveyMapping" parameterType="commonVO">
+	    <![CDATA[
+			INSERT INTO ASSO_SURVEY_MAPPPING (WRITER_SEQ, SUBJECT_SEQ) 
+	   	    VALUES
+	    ]]>
+	    <foreach collection="subjectSeqList" item="el" separator=" , ">
+			<![CDATA[
+            	(#{writer_seq}, #{el.subject_seq})
+        	]]>
+        </foreach>
+    </insert>
+	
+	<!-- 피평가자 목록 삭제 -->
+	<delete id="deleteAssoSurveyMapping" parameterType="commonVO">
+	    <![CDATA[
+			DELETE FROM ASSO_SURVEY_MAPPPING 
+	   	    WHERE WRITER_SEQ = #{writer_seq} AND STATUS = 1
+	    ]]>
+	</delete>
+	
+	<!-- 피평가자 목록 삭제 [디스크 삭제가 아닌 비활성화로 저장만함]-->
+	<update id="deleteAssoSurveyMappingOnlyStatus" parameterType="commonVO">
+	    <![CDATA[
+    		UPDATE ASSO_SURVEY_MAPPPING SET STATUS = 3
+	    ]]>
+	</update>
+	
+    <!-- 피평가자 현황 목록 선택 -->
+   	<select id="selectEmployeeWithSubject" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+			SELECT TE.NO                   as NO,
+				   TE.EMP_NO               as EMP_NO,
+				   TE.NAME                 as NAME,
+				   PTD.NAME                as SUPER_DEPT_NAME, 
+				   TD.NAME                 as DEPT_NAME,
+				   PTR.NAME                as SUPER_ROLE_NAME,
+				   TR.NAME                 as ROLE_NAME,
+				   TE.POSITION             as POSITION, 
+				   TE.EMAIL                as EMAIL,
+				   COUNT(distinct ASWM.SUBJECT_SEQ) as SUBJECT_CNT,
+				   COUNT(distinct ASSM.WRITER_SEQ)  as WRITER_CNT
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  
+					USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD 
+					ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  
+					USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR 
+					ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+				LEFT JOIN ASSO_SURVEY_MAPPPING ASWM
+					ON ASWM.WRITER_SEQ  = TE.NO AND ASWM.STATUS = 1
+				LEFT JOIN ASSO_SURVEY_MAPPPING ASSM
+					ON ASSM.SUBJECT_SEQ = TE.NO AND ASSM.STATUS = 1
+			WHERE TE.STATUS = 1
+			GROUP BY NO
+			ORDER BY NO
+		]]>
+    </select>
+    
+    <!-- 특정 사원 피평가자 전용 현황 목록 -->
+   	<select id="selectSubjectList" parameterType="commonVO" resultType="commonVO">
+	    <![CDATA[
+		    SELECT TE.NO          as NO,
+				   TE.EMP_NO      as EMP_NO,
+				   TE.NAME        as NAME,
+				   PTD.NAME       as SUPER_DEPT_NAME, 
+				   TD.NAME        as DEPT_NAME,
+				   PTR.NAME       as SUPER_ROLE_NAME,
+				   TR.NAME        as ROLE_NAME,
+				   TE.POSITION    as POSITION, 
+				   TE.EMAIL       as EMAIL,
+				   ASM.WRITER_SEQ as WRITER_SEQ
+			FROM TB_EMPLOYEE TE 
+				JOIN TB_DEPT TD  
+					USING (DEPT_SEQ) 
+				JOIN TB_DEPT PTD 
+					ON PTD.DEPT_SEQ = TD.PARENT_SEQ
+				JOIN TB_ROLE TR  
+					USING (ROLE_SEQ)
+				JOIN TB_ROLE PTR 
+					ON PTR.ROLE_SEQ = TR.PARENT_SEQ
+				LEFT join (
+					SELECT * FROM ASSO_SURVEY_MAPPPING WHERE WRITER_SEQ = #{NO} AND STATUS = 1
+				) ASM 
+				    ON ASM.SUBJECT_SEQ = TE.NO
+	    	where no != #{NO} and TE.STATUS = 1
+			ORDER BY NO
+			]]>
+    </select>
+</mapper>

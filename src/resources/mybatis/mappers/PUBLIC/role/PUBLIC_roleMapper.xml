@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.official.role">
+	
+	<!-- 사원 구분 -->
+   	<select id="getPRoleList" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+		SELECT role_seq as ROLE_SEQ,
+			   name     as ROLE_NAME
+		FROM   TB_ROLE 
+		WHERE  parent_seq is null 
+			AND name != '공통';
+	]]>
+    </select>
+   
+	<!-- 직위 조회  -->
+   	<select id="getRoleList" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+		SELECT TR.role_seq  as ROLE_SEQ,
+			   PTR.role_seq as PROLE_SEQ,
+			   PTR.name     as PROLE_NAME,
+			   TR.name      as ROLE_NAME
+		FROM   TB_ROLE TR
+			JOIN TB_ROLE PTR 
+				ON TR.parent_seq = PTR.role_seq
+		WHERE TR.name != '공통';
+	]]>
+    </select>   
+</mapper>

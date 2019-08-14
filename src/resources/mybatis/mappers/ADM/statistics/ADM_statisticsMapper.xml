@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.adm.statistics">
+
+	<!-- 설문지 통계  -->
+   	<select id="getEmpStatistics" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+		SELECT 
+				FFRE.*,
+				TRUNCATE(IFNULL(IS_YES / (IS_YES + IS_NO), 0), 2)*100 DIV 1            AS IS_YES_PERCENT,
+				TRUNCATE(IFNULL(IS_NO  / (IS_YES + IS_NO), 0), 2)*100 DIV 1            AS IS_NO_PERCENT,
+				TRUNCATE(IFNULL(IS_1   / (IS_1 + IS_2 + IS_3 + IS_4), 0), 2)*100 DIV 1 AS IS_1_PERCENT,
+				TRUNCATE(IFNULL(IS_2   / (IS_1 + IS_2 + IS_3 + IS_4), 0), 2)*100 DIV 1 AS IS_2_PERCENT,
+				TRUNCATE(IFNULL(IS_3   / (IS_1 + IS_2 + IS_3 + IS_4), 0), 2)*100 DIV 1 AS IS_3_PERCENT,
+				TRUNCATE(IFNULL(IS_4   / (IS_1 + IS_2 + IS_3 + IS_4), 0), 2)*100 DIV 1 AS IS_4_PERCENT
+		FROM (
+				SELECT 
+						FRE.EMP_SEQ       AS EMP_SEQ,
+						FRE.DEPT_NAME     AS DEPT_NAME,
+						FRE.EMP_NO		  AS EMP_NO,
+						FRE.EMP_NAME	  AS EMP_NAME,
+						FRE.EMP_POSITION  AS EMP_POSITION,
+						FRE.ROLE_NAME     AS ROLE_NAME,
+						SUM(FRE.IS_YES)   AS IS_YES,
+					    SUM(FRE.IS_NO)    AS IS_NO,
+					    SUM(FRE.IS_1) 	  AS IS_1,
+					    SUM(FRE.IS_2) 	  AS IS_2,
+					    SUM(FRE.IS_3) 	  AS IS_3,
+					    SUM(FRE.IS_4) 	  AS IS_4,
+						COUNT(IF(FRE.SURVEY_EXCUSE != '', FRE.SURVEY_EXCUSE, NULL)) AS EXCUSE_CNT
+				FROM  (
+						SELECT
+							TE.NO       		  AS EMP_SEQ,
+							TD.NAME				  AS DEPT_NAME,
+							TE.EMP_NO			  AS EMP_NO,
+							TE.NAME			      AS EMP_NAME,
+							TR.NAME               AS ROLE_NAME,
+							TE.POSITION			  AS EMP_POSITION,
+							TE.STATUS			  AS EMP_STATUS,
+							RE.ASSO_SURVEY_SEQ    AS ASSO_SURVEY_SEQ,
+							RE.SUBJECT_SEQ        AS SUBJECT_SEQ,
+							RE.SURVEY_SEQ         AS SURVEY_SEQ,
+							RE.SURVEY_EXCUSE      AS SURVEY_EXCUSE,
+							IFNULL(RE.IS_YES, 0)  AS IS_YES,
+							IFNULL(RE.IS_NO,  0)  AS IS_NO,
+							IFNULL(RE.IS_1, 0)    AS IS_1,
+							IFNULL(RE.IS_2, 0)    AS IS_2,
+							IFNULL(RE.IS_3, 0)    AS IS_3,
+							IFNULL(RE.IS_4, 0)    AS IS_4
+						FROM
+							TB_EMPLOYEE TE
+							JOIN TB_DEPT TD
+								USING(DEPT_SEQ)
+							JOIN TB_ROLE TR
+								USING(ROLE_SEQ)
+						    LEFT JOIN (
+									SELECT
+										S_RE.ASSO_SURVEY_SEQ  AS ASSO_SURVEY_SEQ,
+										S_RE.SUBJECT_SEQ      AS SUBJECT_SEQ,
+										S_RE.SURVEY_SEQ       AS SURVEY_SEQ,
+										S_RE.SURVEY_EXCUSE    AS SURVEY_EXCUSE,
+										COUNT(IF(S_RE.A_DETAIL_SEQ=1, S_RE.A_DETAIL_SEQ, NULL)) AS IS_YES,
+									    COUNT(IF(S_RE.A_DETAIL_SEQ=2, S_RE.A_DETAIL_SEQ, NULL)) AS IS_NO,
+									    COUNT(IF(S_RE.A_DETAIL_SEQ=3, S_RE.A_DETAIL_SEQ, NULL)) AS IS_1,
+									    COUNT(IF(S_RE.A_DETAIL_SEQ=4, S_RE.A_DETAIL_SEQ, NULL)) AS IS_2,
+									    COUNT(IF(S_RE.A_DETAIL_SEQ=5, S_RE.A_DETAIL_SEQ, NULL)) AS IS_3,
+									    COUNT(IF(S_RE.A_DETAIL_SEQ=6, S_RE.A_DETAIL_SEQ, NULL)) AS IS_4
+									FROM (
+										SELECT
+											ASM.ASSO_SURVEY_SEQ AS ASSO_SURVEY_SEQ,
+											ASM.SUBJECT_SEQ     AS SUBJECT_SEQ, 
+											TS.SURVEY_SEQ       AS SURVEY_SEQ,
+											TS.SURVEY_EXCUSE    AS SURVEY_EXCUSE,
+											TSD.ROW				AS ROW,
+											TSD.A_DETAIL_SEQ    AS A_DETAIL_SEQ
+										FROM  
+											ASSO_SURVEY_MAPPPING ASM
+										    JOIN TB_SURVEY TS
+										    	ON TS.ASSO_SURVEY_SEQ = ASM.ASSO_SURVEY_SEQ
+										    JOIN TB_SURVEY_DETAIL TSD
+										    	ON TSD.SURVEY_SEQ = TS.SURVEY_SEQ
+										WHERE ASM.STATUS = 1
+									) S_RE
+									GROUP BY S_RE.SURVEY_SEQ
+								) RE
+							ON    TE.NO = RE.SUBJECT_SEQ
+							WHERE TE.STATUS = 1
+						) FRE
+					GROUP BY FRE.EMP_SEQ
+				) FFRE
+		ORDER BY FFRE.EMP_SEQ
+	]]>
+    </select>
+    
+    <!-- 엑셀용 질문지 개수 가져오기 -->
+    <select id="getSheetRowCnt" parameterType="commonVO" resultType="commonVO">
+   	<![CDATA[
+	    SELECT 
+				RE.SHEET_SEQ as SHEET_SEQ,
+				COUNT(*)     as ROW_CNT
+		FROM (
+			SELECT
+					TS.SHEET_SEQ  as SHEET_SEQ, 
+					TS.STATUS     as STATUS,
+					TS.ROLE_SEQ   as ROLE_SEQ,
+					TSD.ROW
+			FROM TB_SHEET TS
+				JOIN TB_SHEET_DETAIL TSD
+					USING(SHEET_SEQ)
+			WHERE TS.STATUS = 1
+		) RE
+		GROUP BY SHEET_SEQ
+		ORDER BY SHEET_SEQ
+    ]]>
+    </select> 
+    
+    <!-- 엑셀용 설문지 정보 가져오기-->
+    <select id="getSheetInfo" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+	    SELECT 
+				@rownum := @rownum+1 AS row,
+				RE.A_SEQ
+		FROM (
+				SELECT 
+					   ROW as Q_ROW,
+					   TSD.A_SEQ,
+					   TSD.IS_COMMON
+				FROM TB_SHEET TS
+					JOIN TB_SHEET_DETAIL TSD
+						USING(SHEET_SEQ)
+				WHERE TS.STATUS = 1
+				GROUP BY TSD.ROW, IS_COMMON
+				ORDER BY IS_COMMON DESC, TSD.ROW
+		) RE ,
+		(SELECT @rownum:=0) AS R
+    ]]>
+    </select>
+   
+    <!-- 엑셀용 직원 리스트 명단 가져오기-->
+    <select id="getEmpList" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+	    SELECT 
+	       TE.NO        as SUBJECT_SEQ,
+		   TE.EMP_NO    as EMP_NO,
+		   TE.NAME      as EMP_NAME,
+		   TD.NAME      as DEPT_NAME,
+		   TR.NAME      as ROLE_NAME,
+		   TE.POSITION  as EMP_POSITION
+		FROM 
+			TB_EMPLOYEE TE 
+			JOIN TB_DEPT TD  
+				USING (DEPT_SEQ) 
+			JOIN TB_ROLE TR  
+				USING (ROLE_SEQ)
+		WHERE
+			TE.STATUS = 1
+		ORDER BY SUBJECT_SEQ
+    ]]>
+    </select>
+    
+	<!-- 엑셀용 답변 통계 리스트-->
+    <select id="getAnswerStatistics" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+	    SELECT 
+				TB_Q.SUBJECT_SEQ      AS SUBJECT_SEQ,
+				TB_Q.ROW		      AS ROW,
+				TB_Q.ROW_ANSWER		  AS ROW_ANSWER,
+				TB_Q.SUM_ANSWER		  AS SUM_ANSWER,
+				TB_Q.A_DETAIL_SEQ	  AS A_DETAIL_SEQ,
+				TB_Q.A_SEQ			  AS A_SEQ,
+				TB_Q.A_DETAIL         AS A_DETAIL,
+				TB_Q.A_TYPE           AS A_TYPE
+		FROM (
+				SELECT 
+						TE.NO       AS SUBJECT_SEQ,
+						0           AS ROW,
+						0		    AS ROW_ANSWER,
+						0           AS SUM_ANSWER,
+						0           AS A_DETAIL_SEQ,
+						0 	        AS A_SEQ,
+						'평가 없음'   AS A_DETAIL,
+				        '평가 없음'   AS A_TYPE
+				FROM
+					TB_EMPLOYEE TE 
+					LEFT JOIN ASSO_SURVEY_MAPPPING ASM
+						ON TE.NO = ASM.SUBJECT_SEQ
+				WHERE
+					ASM.ASSO_SURVEY_SEQ IS NULL  
+					AND TE.STATUS = 1 
+				UNION ALL
+				SELECT 	
+						TE.NO       AS SUBJECT_SEQ,
+						TSD.ROW			   	       AS ROW,
+						TEMP_DETAIL_SEQ.ROW_ANSWER AS ROW_ANSWER,
+						SUM(IF(TSD.A_DETAIL_SEQ = TEMP_DETAIL_SEQ.ROW_ANSWER, 1, 0))  AS SUM_ANSWER,
+						TSD.A_DETAIL_SEQ      	   AS A_DETAIL_SEQ,
+						TAD.A_SEQ                  AS A_SEQ,
+						TAD.A_DETAIL		       AS A_DETAIL,
+						TA.A_TYPE                  AS A_TYPE
+				FROM
+					TB_EMPLOYEE TE 
+					JOIN ASSO_SURVEY_MAPPPING ASM
+						ON TE.NO = ASM.SUBJECT_SEQ
+					JOIN TB_SURVEY TS
+						ON ASM.ASSO_SURVEY_SEQ = TS.ASSO_SURVEY_SEQ
+						  AND TS.STATUS = 1
+					LEFT JOIN TB_SURVEY_DETAIL TSD
+						ON TS.SURVEY_SEQ = TSD.SURVEY_SEQ
+					CROSS JOIN (
+						SELECT 1 AS ROW_ANSWER
+					      UNION SELECT 2
+					      UNION SELECT 3
+					      UNION SELECT 4
+					      UNION SELECT 5
+					      UNION SELECT 6	
+					) AS TEMP_DETAIL_SEQ
+					LEFT JOIN TB_ANSWER_DETAIL TAD
+						ON TSD.A_DETAIL_SEQ = TAD.A_DETAIL_SEQ
+					LEFT JOIN TB_ANSWER TA
+						ON TA.A_SEQ = TAD.A_SEQ
+				WHERE ( TA.A_SEQ = 1 AND ROW_ANSWER IN (1,2)) OR 
+				      ( TA.A_SEQ = 2 AND ROW_ANSWER IN (3, 4, 5, 6)) OR
+				      TSD.ROW = 0
+				GROUP BY SUBJECT_SEQ, ROW, ROW_ANSWER, ROW_ANSWER
+			) TB_Q
+		ORDER BY SUBJECT_SEQ, ROW, ROW_ANSWER, ROW_ANSWER
+    ]]>
+    </select>
+</mapper>

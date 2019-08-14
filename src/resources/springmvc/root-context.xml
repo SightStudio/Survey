@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	
+	<!-- Bean scan -->
+	<annotation-driven/>
+	<context:component-scan base-package="com.common"/>
+	<context:component-scan base-package="com.app"/>
+	
+	<!-- 
+		Resource
+		[ 해당 경로는 Dispatcher-Servlet 대신 Tomcat의 Default Servlet에 위임하여 제외 (톰캣의 경우) ]	
+	-->
+	<resources mapping="/web/**" location="/web/"/>
+	
+	<!-- ################## View Resolver config Start ################## -->
+	
+	<!--  [1] Custom View Setting -->
+	<beans:bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<beans:property name="order" value="0" />
+	</beans:bean>
+	
+	<!--  [2] JSP enable -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/jsp/app/" />
+		<beans:property name="suffix" value=".jsp"/>
+		<beans:property name="order" value="1" />
+	</beans:bean>
+	
+	<!--  [3-1] JSON view config        -->
+	<beans:bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+	    <beans:property name="contentType" value="application/json;charset=UTF-8"></beans:property>
+	</beans:bean>
+	
+	<!--  [3-2] download view config    -->
+    <beans:bean id="downloadView" class="com.common.component.view.DownloadView"/>
+    
+    <!--  [3-3] multipart view config    -->
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+	
+	<!-- ################## View Resolver config END ################## -->
+	
+	<!-- Interceptor -->
+	<beans:bean id="frontInterceptor" class="com.common.intercepter.FrontInterceptor"></beans:bean>
+	<interceptors>
+		<!-- [1] Front Interceptor -->
+		<interceptor>
+			<mapping   path="/**"/>
+			<beans:ref bean="frontInterceptor"/>
+		</interceptor>
+	</interceptors>
+
+</beans:beans>

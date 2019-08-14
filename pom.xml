@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.common</groupId>
+	<artifactId>SURVEY</artifactId>
+	<name>SURVEY</name>
+	<packaging>war</packaging>
+	<version>1.0.0-BUILD-SNAPSHOT</version>
+	
+	<properties>
+		<!-- java -->
+		<java-version>11</java-version>
+		
+		<!-- Encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
+		<!-- Spring -->
+		<org.springframework-version>5.1.5.RELEASE</org.springframework-version>
+		
+		<!-- HikariCP -->
+		<hikari.version>3.3.0</hikari.version>
+		
+		<!-- Logging -->
+		<logback.version>1.0.13</logback.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		
+		<!-- Aspect J  -->
+		<org.aspectj-version>1.8.13</org.aspectj-version>
+		
+		<!-- Junit -->
+		<junit.version>4.12</junit.version>
+		
+		<!-- Hibernate / JPA -->
+		<hibernate.version>4.2.1.Final</hibernate.version>
+		
+		<!-- Jackson Object Mapper -->
+		<jackson.version>2.9.9</jackson.version>
+		
+		<!-- Ehcache [Method caching] -->
+		<ehcache.version>2.10.6</ehcache.version>
+	</properties>
+	
+	<dependencies>
+
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+			
+		<!-- Spring and Transactions -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		
+		<dependency>
+	      	<groupId>org.springframework</groupId>
+	      	<artifactId>spring-aop</artifactId>
+	      	<version>${org.springframework-version}</version>
+	    </dependency>
+	    
+	    <!-- Spring Security -->
+	    <dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Spring AOP -->
+	    <dependency>
+	      	<groupId>org.aspectj</groupId>
+	      	<artifactId>aspectjrt</artifactId>
+	      	<version>${org.aspectj-version}</version>
+	    </dependency>
+	    
+	    <dependency>
+	      	<groupId>org.aspectj</groupId>
+	      	<artifactId>aspectjtools</artifactId>
+	      	<version>${org.aspectj-version}</version>
+	    </dependency>
+	    
+	    <!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		
+		<!-- Spring JDBC & DBCP -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+	    
+	    <!-- MySQL Connector  -->
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>8.0.14</version>
+		</dependency>
+		
+		<!-- MyBatis -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis</artifactId>
+		    <version>3.5.0</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis-spring</artifactId>
+		    <version>2.0.0</version>
+		</dependency>
+		
+		<!-- Logging with SLF4J & LogBack -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-core</artifactId>
+		    <version>${logback.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		
+		<!-- Servlet -->
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>4.0.1</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>javax.servlet.jsp</groupId>
+		    <artifactId>javax.servlet.jsp-api</artifactId>
+		    <version>2.3.3</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<!-- Jackson -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+		
+		<!-- Ehcache -->
+		<dependency>
+		    <groupId>net.sf.ehcache</groupId>
+		    <artifactId>ehcache</artifactId>
+		    <version>${ehcache.version}</version>
+		</dependency>
+		
+		<!-- JWT Tocken Library -->
+		<dependency>
+	    	<groupId>io.jsonwebtoken</groupId>
+	    	<artifactId>jjwt</artifactId>
+	    	<version>0.9.1</version>
+		</dependency>
+		
+		<!-- 
+			java xml bind 
+			[ java EE & Cordova Modules are removed since Java 11 ] 
+		-->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<!-- Excel  -->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>4.1.0</version>
+		</dependency>
+		
+		<!-- FILE upload  -->
+		<dependency>
+		    <groupId>commons-fileupload</groupId>
+		    <artifactId>commons-fileupload</artifactId>
+		    <version>1.4</version>
+		</dependency>
+	</dependencies>
+ 		
+    <build>
+    	<defaultGoal>install</defaultGoal>
+    	<directory>${basedir}/target</directory>
+    	<finalName>${project.artifactId}</finalName>
+    	
+    	<!-- java source package path settings -->
+    	<sourceDirectory>${basedir}/src/java</sourceDirectory>
+    	
+    	<!-- build package path settings -->
+    	<outputDirectory>${basedir}/webapp/WEB-INF/classes</outputDirectory>
+    	
+    	<!-- test source package path settings -->
+    	<testSourceDirectory>${basedir}/src/test</testSourceDirectory>
+    	
+    	<!-- resource package path settings -->
+    	<resources>
+    		<resource>
+    			<directory>${basedir}/src/resources</directory>
+    		</resource>
+    	</resources>
+    	
+    	<!-- test resource package path settings -->
+    	<testResources>
+    		<testResource>
+    			<directory>${basedir}/src/test</directory>
+    		</testResource>
+    	</testResources>
+	
+		<plugins>
+			<!-- AWS EC2 세팅 -->
+        	<!-- Embed Tomcat PlugIn [ goal name : `tomcat7: deploy` ] -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<url>http://13.124.73.181/manager/text</url>
+					<path>/</path>
+					<username>sight</username>
+    				<password>bksul40</password>
+					<update>true</update>
+				</configuration>
+			</plugin>
+		
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                </configuration>
+            </plugin>
+            
+            <plugin>            
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-war-plugin</artifactId>
+			  <configuration>
+			    <webXml>${basedir}/webapp/WEB-INF/web.xml</webXml>   
+			    <warSourceDirectory>${basedir}/webapp</warSourceDirectory>     
+			  </configuration>
+			</plugin>
+		</plugins>
+    </build>
+</project>

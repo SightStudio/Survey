@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.app.mapper.common.serverStatus">
+
+	<!-- 서버 상태  - [ 평가 시작 ] -->
+	<update id="startSurvey" parameterType="commonVO">
+	<![CDATA[
+		UPDATE STATUS_SERVER 
+		SET STATUS_SEQ    = '1', 
+			STATUS        = '0', 
+			STATUS_DESC   = '평가 진행중', 
+			MODIFIED_TIME = NOW()
+		WHERE STATUS_SEQ  = '1';
+	]]>
+	</update>
+	
+	<!-- 서버 상태  - [ 평가 종료 ] -->
+	<update id="endSurvey" parameterType="commonVO">
+    <![CDATA[
+		UPDATE STATUS_SERVER 
+		SET STATUS_SEQ    = '1', 
+			STATUS        = '1', 
+			STATUS_DESC   = '평가 준비', 
+			MODIFIED_TIME = NOW()
+		WHERE STATUS_SEQ  = '1';
+	]]>
+	</update>
+	
+	<!-- 서버 상태 가져오기 -->
+   	<select id="getSurveyStatus" parameterType="commonVO" resultType="commonVO">
+    <![CDATA[
+	    SELECT
+			STATUS_SEQ,
+			STATUS,
+			STATUS_DESC,
+			DATE_FORMAT(MODIFIED_TIME,'%Y-%d-%m %h:%i:%s')
+		FROM STATUS_SERVER
+		WHERE STATUS_SEQ = 1;
+	]]>
+    </select>
+</mapper>

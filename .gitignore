@@ -1,0 +1,17 @@
+#######################################
+
+     Sight Manual Backend Exclusion
+
+         Spring Legacy Project
+
+#######################################
+
+# 1. Eclipse IDE config
+.classpath
+.springBeans
+.settings
+
+# 2. project config
+target/
+webapp/WEB-INF/classes/
+

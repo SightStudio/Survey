@@ -30,7 +30,7 @@
 		<org.aspectj-version>1.8.13</org.aspectj-version>
 		
 		<!-- Junit -->
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		
 		<!-- Hibernate / JPA -->
 		<hibernate.version>4.2.1.Final</hibernate.version>

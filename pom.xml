@@ -36,7 +36,7 @@
 		<hibernate.version>4.2.1.Final</hibernate.version>
 		
 		<!-- Jackson Object Mapper -->
-		<jackson.version>2.9.9</jackson.version>
+		<jackson.version>2.12.6.1</jackson.version>
 		
 		<!-- Ehcache [Method caching] -->
 		<ehcache.version>2.10.6</ehcache.version>
